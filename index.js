@@ -15,3 +15,5 @@ app.use(function *() {
 });
 
 app.listen(3000);
+
+// IPC
