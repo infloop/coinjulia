@@ -22,7 +22,7 @@ var NMCUSDPair = new Pair(Currencies.NMC, Currencies.USD, btceTrade);
 var LTCUSDPair = new Pair(Currencies.LTC, Currencies.USD, btceTrade);
 var NMCBTCPair = new Pair(Currencies.NMC, Currencies.BTC, btceTrade);
 
-var rINt = setInterval(refresh, 3000);
+var rINt = setInterval(refresh, 6000);
 
 function refresh() {
     co(function*() {
@@ -67,7 +67,7 @@ function refresh() {
     }).catch(onerror);
     console.log('refreshed');
     clearInterval(rINt);
-    rINt = setInterval(refresh, 3000);
+    rINt = setInterval(refresh, 6000);
 };
 
 

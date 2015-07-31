@@ -42,7 +42,6 @@ var Pair = function(sourceCurrency, destCurrency, tradeOperator) {
         yield this.storage.saveAsync('status', this.status);
         yield this.storage.saveAsync('lastUpdate', this.lastUpdate);
         yield this.storage.emitAsync('refreshed');
-        console.log('saved');
     };
 
     this.load = function*() {
