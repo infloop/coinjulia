@@ -1,12 +1,19 @@
 'use strict';
 var client = require('redis').createClient();
+var client_sub = require('redis').createClient();
 var Promise = require("bluebird");
 
 var ready = false;
+var readySub = false;
 
 client.on('ready', function() {
     console.log('ready');
     ready = true;
+});
+
+client_sub.on('ready', function() {
+    console.log('ready sub');
+    readySub = true;
 });
 
 var Storage = function(prefix) {
@@ -22,10 +29,24 @@ var Storage = function(prefix) {
       }
     };
 
+    this.afterReadySub = function(cb) {
+        if(readySub) {
+            cb();
+        } else {
+            client_sub.on('ready', function() {
+                cb();
+            });
+        }
+    };
+
     this.on = function(eventName, cb) {
         var self = this;
-        this.afterReady(() => {
-            client.on(self.prefix+':'+eventName, cb);
+        this.afterReadySub(() => {
+            console.log('storage on');
+            client_sub.on('message', function(channel, message) {
+                cb();
+            });
+            client_sub.subscribe(self.prefix+':'+eventName);
         });
     };
 

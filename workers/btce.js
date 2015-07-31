@@ -22,46 +22,55 @@ var NMCUSDPair = new Pair(Currencies.NMC, Currencies.USD, btceTrade);
 var LTCUSDPair = new Pair(Currencies.LTC, Currencies.USD, btceTrade);
 var NMCBTCPair = new Pair(Currencies.NMC, Currencies.BTC, btceTrade);
 
-co(function*() {
-    yield LTCRURPair.refreshAsync();
-    yield LTCBTCPair.refreshAsync();
-    yield BTCRURPair.refreshAsync();
-    yield USDRURPair.refreshAsync();
-    yield USDRURPair.refreshAsync();
-    yield NMCUSDPair.refreshAsync();
-    yield LTCUSDPair.refreshAsync();
-    yield NMCBTCPair.refreshAsync();
+var rINt = setInterval(refresh, 3000);
 
-    console.log('bids:' +LTCRURPair.getDestTreshold());
-    console.log('asks:' +LTCRURPair.getSourceTreshold());
+function refresh() {
+    co(function*() {
+        yield LTCRURPair.refreshAsync();
+        yield LTCBTCPair.refreshAsync();
+        //yield BTCRURPair.refreshAsync();
+        //yield USDRURPair.refreshAsync();
+        //yield USDRURPair.refreshAsync();
+        //yield NMCUSDPair.refreshAsync();
+        //yield LTCUSDPair.refreshAsync();
+        //yield NMCBTCPair.refreshAsync();
 
-    console.log('bids:' +LTCBTCPair.getDestTreshold());
-    console.log('asks:' +LTCBTCPair.getSourceTreshold());
+        //console.log('bids:' +LTCRURPair.getDestTreshold());
+        //console.log('asks:' +LTCRURPair.getSourceTreshold());
+        //
+        //console.log('bids:' +LTCBTCPair.getDestTreshold());
+        //console.log('asks:' +LTCBTCPair.getSourceTreshold());
+        //
+        //console.log('bids:' +BTCRURPair.getDestTreshold());
+        //console.log('asks:' +BTCRURPair.getSourceTreshold());
+        //
+        //var rur = 100;
+        //var ltcOp = LTCRURPair.calculate(Currencies.RUR, rur);
+        //console.log(ltcOp.toString());
+        //
+        //var usdOp = USDRURPair.calculate(Currencies.RUR, rur);
+        //console.log(usdOp.toString());
+        //
+        //var btcOp = LTCBTCPair.calculate(Currencies.LTC, ltcOp.destAmount);
+        //console.log(btcOp.toString());
+        //
+        //var btcrurOp = BTCRURPair.calculate(Currencies.BTC, btcOp.destAmount);
+        //console.log(btcrurOp.toString());
+        //
+        //var btcnmcOp = NMCBTCPair.calculate(Currencies.BTC, btcOp.destAmount);
+        //console.log(btcnmcOp.toString());
+        //
+        //var rurOp = BTCRURPair.calculate(Currencies.BTC, btcnmcOp.destAmount);
+        //console.log(rurOp.toString());
 
-    console.log('bids:' +BTCRURPair.getDestTreshold());
-    console.log('asks:' +BTCRURPair.getSourceTreshold());
 
-    var rur = 100;
-    var ltcOp = LTCRURPair.calculate(Currencies.RUR, rur);
-    console.log(ltcOp.toString());
-
-    var usdOp = USDRURPair.calculate(Currencies.RUR, rur);
-    console.log(usdOp.toString());
-
-    var btcOp = LTCBTCPair.calculate(Currencies.LTC, ltcOp.destAmount);
-    console.log(btcOp.toString());
-
-    var btcrurOp = BTCRURPair.calculate(Currencies.BTC, btcOp.destAmount);
-    console.log(btcrurOp.toString());
-
-    var btcnmcOp = NMCBTCPair.calculate(Currencies.BTC, btcOp.destAmount);
-    console.log(btcnmcOp.toString());
-
-    var rurOp = BTCRURPair.calculate(Currencies.BTC, btcnmcOp.destAmount);
-    console.log(rurOp.toString());
+    }).catch(onerror);
+    console.log('refreshed');
+    clearInterval(rINt);
+    rINt = setInterval(refresh, 3000);
+};
 
 
-}).catch(onerror);
 
 function onerror(err) {
     // log any uncaught errors

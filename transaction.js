@@ -26,12 +26,12 @@ var Transaction = function(sourceCurrency, destCurrency, exchangeRate, destAmoun
      * @param {Transaction} transaction
      */
     this.add = function(transaction) {
-        this.transactions.push(transaction);
-
         this.destAmount += transaction.destAmount;
         this.sourceAmount += transaction.sourceAmount;
         this.fee += transaction.fee;
-        this.exchangeRate = transaction.destAmount / transaction.sourceAmount;
+        this.exchangeRate = this.sourceAmount / this.destAmount;
+
+        this.transactions.push(transaction);
     };
 
     this.toString = function() {

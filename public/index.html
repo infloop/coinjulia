@@ -3,18 +3,110 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Hello</title>
+    <script src="lodash.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+        google.load("visualization", "1", {packages:["corechart"]});
+
+        var filterAsk = function(item) {
+            return item[1] == 0;
+        };
+
+        var filterBid = function(item) {
+            return item[2] == 0;
+        };
+
+        function refreshChart(pair) {
+            var options = {
+                title: pair.description,
+                hAxis: {title: 'Exchange',  titleTextStyle: {color: '#333'}},
+                vAxis: {title: 'Amount'}
+            };
+
+            var data = pair.depthAxis.concat(pair.depthData);
+
+            var DataTable = google.visualization.arrayToDataTable(data);
+
+            if(!pair.chart) pair.chart = new google.visualization.AreaChart($(pair.el)[0]);
+            pair.chart.draw(DataTable, options);
+        }
+
+        var refresh = function(type, performer, context) {
+            if(type == 'ask') {
+                return (function(asks) {
+                    context.depthData = _.filter(context.depthData, performer);
+                    _.map(asks, function(ask) {
+                        context.depthData.push([ask[0], ask[1], 0]);
+                    });
+                    refreshChart(context);
+                });
+            } else if(type == 'bid') {
+                return (function(bids) {
+                    context.depthData = _.filter(context.depthData, performer);
+                    _.map(bids, function(bid) {
+                        context.depthData.push([bid[0], 0, bid[1]]);
+                    });
+                    refreshChart(context);
+                });
+            }
+        };
+
+        var LTCBTC = {
+            description: 'LTC/BTC asks',
+            el: '#chart_LTCBTC',
+            depthData: [],
+            depthAxis: [['Exchange', 'Ask', 'Bid']],
+            chart: null,
+            ask: function() {
+                return refresh('ask', filterAsk, LTCBTC)
+            },
+            bid: function() {
+                return refresh('bid', filterBid, LTCBTC)
+            }
+        };
+
+        var LTCRUR = {
+            description: 'LTC/RUR asks',
+            el: '#chart_LTCRUR',
+            depthData: [],
+            depthAxis: [['Exchange', 'Ask', 'Bid']],
+            chart: null,
+            ask: function(ask) {
+                return refresh('ask', filterAsk, LTCRUR);
+            },
+            bid: function() {
+                return refresh('bid', filterBid, LTCRUR)
+            }
+        };
+
+
+
+        $(document).ready(function(){
+
+
+
+        });
+    </script>
+
 </head>
 <body>
-    HELLO THERE!
-    <ul id="messages"></ul>
-    <script src="/socket.io/socket.io.js"></script>
+    <div id="charts">
+        <div id="chart_LTCRUR" style="width: 500px; height: 300px;"></div>
+        <div id="chart_LTCBTC" style="width: 500px; height: 300px;"></div>
+    </div>
+
     <script>
         var socket = io();
         socket.on('news', function(msg){
            console.log(msg);
-           $('#messages').append($('<li>').text(JSON.stringify(msg)));
         });
+        socket.on('ltc_rur:asks', LTCRUR.ask());
+        socket.on('ltc_rur:bids', LTCRUR.bid());
+        socket.on('ltc_btc:bids', LTCBTC.bid());
+        socket.on('ltc_btc:asks', LTCBTC.ask());
+
     </script>
 </body>
 </html>

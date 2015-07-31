@@ -5,6 +5,9 @@ var _ = require('lodash');
 var co = require('co');
 var Currencies = require('./currencies');
 var Transaction = require('./transaction');
+var events  = require('events');
+var util = require('util');
+
 
 function onerror(err) {
     // log any uncaught errors
@@ -39,6 +42,7 @@ var Pair = function(sourceCurrency, destCurrency, tradeOperator) {
         yield this.storage.saveAsync('status', this.status);
         yield this.storage.saveAsync('lastUpdate', this.lastUpdate);
         yield this.storage.emitAsync('refreshed');
+        console.log('saved');
     };
 
     this.load = function*() {
@@ -47,12 +51,16 @@ var Pair = function(sourceCurrency, destCurrency, tradeOperator) {
         this.asks = JSON.parse(yield this.storage.loadAsync('asks'));
         this.status = yield this.storage.loadAsync('status');
         this.lastUpdate = yield this.storage.loadAsync('lastUpdate');
+        this.emit('refreshed');
+        console.log('loaded');
     };
 
     this.initialize = function() {
         var self = this;
-        if(!tradeOperator) {
+        if(!this.tradeOperator) {
+            console.log('will listen');
             this.storage.on('refreshed', function() {
+                console.log('signal received');
                 co(self.load()).catch(onerror);
             });
         }
@@ -116,38 +124,39 @@ var Pair = function(sourceCurrency, destCurrency, tradeOperator) {
      * @returns {Transaction}
      */
     this.calculateSell = function(amount) {
+        console.log('selling');
+
         var self = this;
-        var boughtAmount = 0;
         var currencyAmount = amount;
-        var transactions = new Transaction(self.sourceCurrency, self.destCurrency);
+        var transactions = new Transaction(self.destCurrency, self.sourceCurrency);
         _.map(this.asks, function(ask) {
             if(ask[1] >= currencyAmount && currencyAmount>0) {
                 let localAmount = (currencyAmount / ask[0]);
                 let fee = localAmount * self.fee;
-                boughtAmount += (localAmount - fee);
-                currencyAmount = 0;
 
                 transactions.add(new Transaction(
-                    self.sourceCurrency,
                     self.destCurrency,
+                    self.sourceCurrency,
                     ask[0],
-                    boughtAmount,
+                    (localAmount - fee),
                     currencyAmount,
                     fee));
+
+                currencyAmount = 0;
 
             } else if(currencyAmount>0) {
                 let localAmount = (ask[1] / ask[0]);
                 let fee = localAmount * self.fee;
-                boughtAmount += (localAmount - fee);
-                currencyAmount -= ask[1];
 
                 transactions.add(new Transaction(
-                    self.sourceCurrency,
                     self.destCurrency,
+                    self.sourceCurrency,
                     ask[0],
-                    boughtAmount,
+                    (localAmount - fee),
                     ask[1],
                     fee));
+
+                currencyAmount -= ask[1];
             }
         });
 
@@ -160,39 +169,39 @@ var Pair = function(sourceCurrency, destCurrency, tradeOperator) {
      * @returns {Transaction}
      */
     this.calculateBuy = function(amount) {
+        console.log('buying');
+
         var self = this;
-        var boughtAmount = 0;
         var currencyAmount = amount;
-        var transactions = new Transaction(self.destCurrency, self.sourceCurrency);
+        var transactions = new Transaction(self.sourceCurrency, self.destCurrency);
         _.map(this.bids, function(bid) {
             if(bid[1] >= currencyAmount && currencyAmount>0) {
                 let localAmount = (currencyAmount * bid[0]);
                 let fee = localAmount * self.fee;
-                boughtAmount += (localAmount - fee);
-                currencyAmount = 0;
-
                 transactions.add(new Transaction(
-                    self.destCurrency,
                     self.sourceCurrency,
+                    self.destCurrency,
                     bid[0],
-                    boughtAmount,
+                    (localAmount - fee),
                     currencyAmount,
                     fee));
 
+                currencyAmount = 0;
             } else if(currencyAmount>0) {
 
                 let localAmount = (bid[1] * bid[0]);
                 let fee = localAmount * self.fee;
-                boughtAmount += (localAmount - fee);
-                currencyAmount -= bid[1];
+
 
                 transactions.add(new Transaction(
-                    self.destCurrency,
                     self.sourceCurrency,
+                    self.destCurrency,
                     bid[0],
-                    boughtAmount,
+                    (localAmount - fee),
                     bid[1],
                     fee));
+
+                currencyAmount -= bid[1];
             }
         });
         return transactions;
@@ -220,5 +229,7 @@ var Pair = function(sourceCurrency, destCurrency, tradeOperator) {
 
     this.initialize();
 };
+
+util.inherits(Pair, events.EventEmitter);
 
 module.exports = Pair;
