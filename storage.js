@@ -7,12 +7,10 @@ var ready = false;
 var readySub = false;
 
 client.on('ready', function() {
-    console.log('ready');
     ready = true;
 });
 
 client_sub.on('ready', function() {
-    console.log('ready sub');
     readySub = true;
 });
 
@@ -42,7 +40,6 @@ var Storage = function(prefix) {
     this.on = function(eventName, cb) {
         var self = this;
         this.afterReadySub(() => {
-            console.log('storage on');
             client_sub.on('message', function(channel, message) {
                 cb();
             });

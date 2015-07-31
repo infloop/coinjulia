@@ -54,7 +54,7 @@
         };
 
         var LTCBTC = {
-            description: 'LTC/BTC asks',
+            description: 'LTC/BTC',
             el: '#chart_LTCBTC',
             depthData: [],
             depthAxis: [['Exchange', 'Ask', 'Bid']],
@@ -68,7 +68,7 @@
         };
 
         var LTCRUR = {
-            description: 'LTC/RUR asks',
+            description: 'LTC/RUR',
             el: '#chart_LTCRUR',
             depthData: [],
             depthAxis: [['Exchange', 'Ask', 'Bid']],
@@ -78,6 +78,20 @@
             },
             bid: function() {
                 return refresh('bid', filterBid, LTCRUR)
+            }
+        };
+
+        var BTCRUR = {
+            description: 'BTC/RUR',
+            el: '#chart_BTCRUR',
+            depthData: [],
+            depthAxis: [['Exchange', 'Ask', 'Bid']],
+            chart: null,
+            ask: function(ask) {
+                return refresh('ask', filterAsk, BTCRUR);
+            },
+            bid: function() {
+                return refresh('bid', filterBid, BTCRUR)
             }
         };
 
@@ -93,8 +107,9 @@
 </head>
 <body>
     <div id="charts">
-        <div id="chart_LTCRUR" style="width: 500px; height: 300px;"></div>
-        <div id="chart_LTCBTC" style="width: 500px; height: 300px;"></div>
+        <div id="chart_LTCRUR" style="width: 500px; height: 300px; display: inline-block"></div>
+        <div id="chart_LTCBTC" style="width: 500px; height: 300px; display: inline-block"></div>
+        <div id="chart_BTCRUR" style="width: 500px; height: 300px; display: inline-block"></div>
     </div>
 
     <script>
@@ -104,8 +119,12 @@
         });
         socket.on('ltc_rur:asks', LTCRUR.ask());
         socket.on('ltc_rur:bids', LTCRUR.bid());
+
         socket.on('ltc_btc:bids', LTCBTC.bid());
         socket.on('ltc_btc:asks', LTCBTC.ask());
+
+        socket.on('btc_rur:bids', BTCRUR.bid());
+        socket.on('btc_rur:asks', BTCRUR.ask());
 
     </script>
 </body>

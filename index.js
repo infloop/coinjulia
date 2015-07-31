@@ -44,6 +44,11 @@ io.on('connection', function(socket){
         socket.emit('ltc_btc:asks', LTCBTCPair.asks);
         socket.emit('ltc_btc:bids', LTCBTCPair.bids);
     });
+
+    BTCRURPair.on('refreshed', function() {
+        socket.emit('btc_rur:asks', BTCRURPair.asks);
+        socket.emit('btc_rur:bids', BTCRURPair.bids);
+    });
 });
 
 // Start the server

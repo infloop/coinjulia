@@ -28,7 +28,7 @@ function refresh() {
     co(function*() {
         yield LTCRURPair.refreshAsync();
         yield LTCBTCPair.refreshAsync();
-        //yield BTCRURPair.refreshAsync();
+        yield BTCRURPair.refreshAsync();
         //yield USDRURPair.refreshAsync();
         //yield USDRURPair.refreshAsync();
         //yield NMCUSDPair.refreshAsync();

@@ -52,15 +52,12 @@ var Pair = function(sourceCurrency, destCurrency, tradeOperator) {
         this.status = yield this.storage.loadAsync('status');
         this.lastUpdate = yield this.storage.loadAsync('lastUpdate');
         this.emit('refreshed');
-        console.log('loaded');
     };
 
     this.initialize = function() {
         var self = this;
         if(!this.tradeOperator) {
-            console.log('will listen');
             this.storage.on('refreshed', function() {
-                console.log('signal received');
                 co(self.load()).catch(onerror);
             });
         }
