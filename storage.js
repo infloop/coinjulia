@@ -24,29 +24,28 @@ var Storage = function(prefix) {
 
     this.on = function(eventName, cb) {
         var self = this;
-        this.afterReady((cb) => {
+        this.afterReady(() => {
             client.on(self.prefix+':'+eventName, cb);
         });
     };
 
     this.emit = function(eventName, cb) {
         var self = this;
-        this.afterReady((cb) => {
+        this.afterReady(() => {
             client.publish(self.prefix+':'+eventName, JSON.stringify('ok'), cb);
         });
     };
 
     this.save = function(storageName, value, cb) {
         var self = this;
-        this.afterReady((cb) => {
-            console.log('save '+self.prefix+':'+storageName, value);
+        this.afterReady(() => {
             client.set(self.prefix+':'+storageName, value, cb);
         });
     };
 
     this.load = function(storageName, cb) {
         var self = this;
-        this.afterReady((cb) => {
+        this.afterReady(() => {
             client.get(self.prefix+':'+storageName, cb);
         });
     };

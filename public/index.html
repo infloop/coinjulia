@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Hello</title>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+</head>
+<body>
+    HELLO THERE!
+    <ul id="messages"></ul>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+        socket.on('news', function(msg){
+           console.log(msg);
+           $('#messages').append($('<li>').text(JSON.stringify(msg)));
+        });
+    </script>
+</body>
+</html>
