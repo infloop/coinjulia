@@ -49,6 +49,11 @@ io.on('connection', function(socket){
         socket.emit('btc_rur:asks', BTCRURPair.asks);
         socket.emit('btc_rur:bids', BTCRURPair.bids);
     });
+
+    USDRURPair.on('refreshed', function() {
+        socket.emit('usd_rur:asks', USDRURPair.asks);
+        socket.emit('usd_rur:bids', USDRURPair.bids);
+    });
 });
 
 // Start the server

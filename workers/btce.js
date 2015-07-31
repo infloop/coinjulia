@@ -22,15 +22,14 @@ var NMCUSDPair = new Pair(Currencies.NMC, Currencies.USD, btceTrade);
 var LTCUSDPair = new Pair(Currencies.LTC, Currencies.USD, btceTrade);
 var NMCBTCPair = new Pair(Currencies.NMC, Currencies.BTC, btceTrade);
 
-var rINt = setInterval(refresh, 6000);
+var rINt = setInterval(refresh, 10000);
 
 function refresh() {
     co(function*() {
         yield LTCRURPair.refreshAsync();
         yield LTCBTCPair.refreshAsync();
         yield BTCRURPair.refreshAsync();
-        //yield USDRURPair.refreshAsync();
-        //yield USDRURPair.refreshAsync();
+        yield USDRURPair.refreshAsync();
         //yield NMCUSDPair.refreshAsync();
         //yield LTCUSDPair.refreshAsync();
         //yield NMCBTCPair.refreshAsync();
@@ -65,9 +64,9 @@ function refresh() {
 
 
     }).catch(onerror);
-    console.log('refreshed');
+    //console.log('refreshed');
     clearInterval(rINt);
-    rINt = setInterval(refresh, 6000);
+    rINt = setInterval(refresh, 10000);
 };
 
 

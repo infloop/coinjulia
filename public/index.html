@@ -95,11 +95,21 @@
             }
         };
 
-
+        var USDRUR = {
+            description: 'USD/RUR',
+            el: '#chart_USDRUR',
+            depthData: [],
+            depthAxis: [['Exchange', 'Ask', 'Bid']],
+            chart: null,
+            ask: function(ask) {
+                return refresh('ask', filterAsk, USDRUR);
+            },
+            bid: function() {
+                return refresh('bid', filterBid, USDRUR)
+            }
+        };
 
         $(document).ready(function(){
-
-
 
         });
     </script>
@@ -110,6 +120,7 @@
         <div id="chart_LTCRUR" style="width: 500px; height: 300px; display: inline-block"></div>
         <div id="chart_LTCBTC" style="width: 500px; height: 300px; display: inline-block"></div>
         <div id="chart_BTCRUR" style="width: 500px; height: 300px; display: inline-block"></div>
+        <div id="chart_USDRUR" style="width: 500px; height: 300px; display: inline-block"></div>
     </div>
 
     <script>
@@ -126,6 +137,8 @@
         socket.on('btc_rur:bids', BTCRUR.bid());
         socket.on('btc_rur:asks', BTCRUR.ask());
 
+        socket.on('usd_rur:bids', USDRUR.bid());
+        socket.on('usd_rur:asks', USDRUR.ask());
     </script>
 </body>
 </html>
