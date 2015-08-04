@@ -16,9 +16,23 @@ function onerror(err) {
     console.error(err.stack);
 }
 
-var Pair = function(sourceCurrency, destCurrency, tradeOperator) {
+var Pair = function(name, sourceCurrency, destCurrency, tradeOperator) {
 
+    this.name = name;
+
+    /**
+     *
+     * @type {BTCE|TradeAPI|null}
+     */
     this.tradeOperator = tradeOperator || null;
+
+    /**
+     *
+     * @param {TradeAPI} tradeOperator
+     */
+    this.setTradeOperator = function(tradeOperator) {
+        this.tradeOperator = tradeOperator;
+    };
 
     this.sourceCurrency = sourceCurrency;
     this.destCurrency = destCurrency;
@@ -33,7 +47,12 @@ var Pair = function(sourceCurrency, destCurrency, tradeOperator) {
         this.sourceCurrency = sourceCurrency;
     }
 
-    this.storage = new Storage(this.tradePairName);
+    /**
+     *
+     * @type {Storage}
+     */
+    this.storage = null;
+
 
     this.save = function*() {
         yield this.storage.saveAsync('fee', this.fee);
@@ -54,12 +73,18 @@ var Pair = function(sourceCurrency, destCurrency, tradeOperator) {
     };
 
     this.initialize = function() {
+        this.storage = new Storage(this.tradePairName);
+    };
+
+    this.startListening = function() {
         var self = this;
-        if(!this.tradeOperator) {
-            this.storage.on('refreshed', function() {
-                co(self.load()).catch(onerror);
-            });
-        }
+        this.storage.on('refreshed', function() {
+            co(self.load()).catch(onerror);
+        });
+    };
+
+    this.stopListening = function() {
+        this.storage.off('refreshed');
     };
 
     this.fee = null;
@@ -108,6 +133,8 @@ var Pair = function(sourceCurrency, destCurrency, tradeOperator) {
         self.fee = info2.trade/100;
 
         yield this.save();
+
+        return 3;
     };
 
     this.calculateFee = function(amount) {

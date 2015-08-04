@@ -47,6 +47,13 @@ var Storage = function(prefix) {
         });
     };
 
+    this.off = function(eventName, cb) {
+        var self = this;
+        this.afterReadySub(() => {
+            client_sub.unsubscribe(self.prefix+':'+eventName);
+        });
+    };
+
     this.emit = function(eventName, cb) {
         var self = this;
         this.afterReady(() => {

@@ -109,6 +109,22 @@
             }
         };
 
+        var NMCUSD = {
+            description: 'NMC/USD',
+            el: '#chart_NMCUSD',
+            depthData: [],
+            depthAxis: [['Exchange', 'Ask', 'Bid']],
+            chart: null,
+            ask: function(ask) {
+                return refresh('ask', filterAsk, NMCUSD);
+            },
+            bid: function() {
+                return refresh('bid', filterBid, NMCUSD)
+            }
+        };
+
+
+
         $(document).ready(function(){
 
         });
@@ -121,6 +137,7 @@
         <div id="chart_LTCBTC" style="width: 500px; height: 300px; display: inline-block"></div>
         <div id="chart_BTCRUR" style="width: 500px; height: 300px; display: inline-block"></div>
         <div id="chart_USDRUR" style="width: 500px; height: 300px; display: inline-block"></div>
+        <div id="chart_NMCUSD" style="width: 500px; height: 300px; display: inline-block"></div>
     </div>
 
     <script>
@@ -128,6 +145,7 @@
         socket.on('news', function(msg){
            console.log(msg);
         });
+
         socket.on('ltc_rur:asks', LTCRUR.ask());
         socket.on('ltc_rur:bids', LTCRUR.bid());
 
@@ -139,6 +157,9 @@
 
         socket.on('usd_rur:bids', USDRUR.bid());
         socket.on('usd_rur:asks', USDRUR.ask());
+
+        socket.on('nmc_usd:bid', NMCUSD.bid());
+        socket.on('nmc_usd:asks', NMCUSD.ask());
     </script>
 </body>
 </html>
